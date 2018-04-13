@@ -1,3 +1,4 @@
+//modificado
 //TRANSMISOR_TX_RF
 
 // SimpleTx - the master or the transmitter
@@ -29,6 +30,9 @@ ARDUINO->PROTOBOARD
 
 #define CE_PIN   9
 #define CSN_PIN 10
+
+int ejex;
+int eje_y;
 
 const byte slaveAddress[5] = {'R','x','A','A','A'};
 
@@ -73,34 +77,104 @@ pinMode(led,OUTPUT);
 //====================
 
 void loop() {
+ejex=map(analogRead(A1),0,660,0,180);
+//Serial.println(angulo);
 
-  digitalWrite(led,LOW);
-//    currentMillis = millis();
-//    if (currentMillis - prevMillis >= txIntervalMillis) {
-//        send();
-//        prevMillis = millis();
-//    }
-if(digitalRead(btn)){debounceCount();}
-if(digitalRead(btn2)){debounceCount2();}
-
-   if (counter != ISRCounter)
-   {
-    send(); digitalWrite(led,HIGH);
-    counter = ISRCounter;
-    //Serial.println(counter);
-   }
+eje_y=map(analogRead(A2),0,660,0,180);
+Serial.println(eje_y);
 
 
-      if (counter2 != ISRCounter2)
-   {
-    send2(); digitalWrite(led,HIGH);
-    counter2 = ISRCounter2;
-    //Serial.println(counter);
-   }
-if(estado2==HIGH){send2(); digitalWrite(led,HIGH);delay(50);}
+if(ejex>95||ejex<85){
+  if(ejex>95){send1();}
+  if(ejex<85){send2();}
+}
+
+if(eje_y>95||eje_y<85){
+  if(eje_y>95){derecha();}
+  if(eje_y<85){izquierda();}
+}
+
+
+
+//if(digitalRead(btn)){debounceCount();}
+//if(digitalRead(btn2)){debounceCount2();}
+//
+//   if (counter != ISRCounter)
+//   {
+//    send(); digitalWrite(led,HIGH);
+//    counter = ISRCounter;
+//    //Serial.println(counter);
+//   }
+//
+//
+//      if (counter2 != ISRCounter2)
+//   {
+//    send2(); digitalWrite(led,HIGH);
+//    counter2 = ISRCounter2;
+//    //Serial.println(counter);
+//   }
+//if(estado2==HIGH){send2(); digitalWrite(led,HIGH);delay(50);}
 }
 
 //====================
+
+void send1() {
+
+    bool rslt;
+dataToSend[8] = 'A';
+    rslt = radio.write( &dataToSend, sizeof(dataToSend) );
+        // Always use sizeof() as it gives the size as the number of bytes.
+        // For example if dataToSend was an int sizeof() would correctly return 2
+
+    Serial.print("Data Sent ");
+    Serial.print(dataToSend);
+    if (rslt) {
+        Serial.println("  Acknowledge received");
+        //updateMessage();
+    }
+    else {
+        Serial.println("  Tx failed");
+    }
+}
+
+void derecha() {
+
+    bool rslt;
+dataToSend[8] = 'C';
+    rslt = radio.write( &dataToSend, sizeof(dataToSend) );
+        // Always use sizeof() as it gives the size as the number of bytes.
+        // For example if dataToSend was an int sizeof() would correctly return 2
+
+    Serial.print("Data Sent ");
+    Serial.print(dataToSend);
+    if (rslt) {
+        Serial.println("  Acknowledge received");
+        //updateMessage();
+    }
+    else {
+        Serial.println("  Tx failed");
+    }
+}
+
+void izquierda() {
+
+    bool rslt;
+dataToSend[8] = 'D';
+    rslt = radio.write( &dataToSend, sizeof(dataToSend) );
+        // Always use sizeof() as it gives the size as the number of bytes.
+        // For example if dataToSend was an int sizeof() would correctly return 2
+
+    Serial.print("Data Sent ");
+    Serial.print(dataToSend);
+    if (rslt) {
+        Serial.println("  Acknowledge received");
+        //updateMessage();
+    }
+    else {
+        Serial.println("  Tx failed");
+    }
+}
+
 
 void send2() {
 
@@ -120,24 +194,8 @@ dataToSend[8] = 'B';
         Serial.println("  Tx failed");
     }
 }
-void send() {
 
-    bool rslt;
-dataToSend[8] = 'A';
-    rslt = radio.write( &dataToSend, sizeof(dataToSend) );
-        // Always use sizeof() as it gives the size as the number of bytes.
-        // For example if dataToSend was an int sizeof() would correctly return 2
 
-    Serial.print("Data Sent ");
-    Serial.print(dataToSend);
-    if (rslt) {
-        Serial.println("  Acknowledge received");
-        //updateMessage();
-    }
-    else {
-        Serial.println("  Tx failed");
-    }
-}
 
 //================
 

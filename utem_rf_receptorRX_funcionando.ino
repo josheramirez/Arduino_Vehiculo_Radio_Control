@@ -1,4 +1,5 @@
 
+//modificado
 //RECEPTOR_RX_RF
 
 // SimpleRx - the slave or the receiver
@@ -20,6 +21,10 @@ ARDUINO->PROTOBOARD
 5->LED
 */
 
+#include <Servo.h>                    // Incluir la librería Servo
+Servo servo1;                         // Crear un objeto tipo Servo llamado servo1
+int servo = 90 ;
+
 #include <SPI.h>
 #include <nRF24L01.h>
 #include <RF24.h>
@@ -36,6 +41,10 @@ const byte thisSlaveAddress[5] = {'R','x','A','A','A'};
 RF24 radio(CE_PIN, CSN_PIN);
 
 char dataReceived[10]; // this must match dataToSend in the TX
+char mensaje1[10]="Message A";
+char mensaje2[10]="Message B";
+char mensaje3[10]="Message C";
+char mensaje4[10]="Message D";
 bool newData = false;
 
 int led=5;
@@ -53,6 +62,8 @@ pinMode(led,OUTPUT);
     radio.setDataRate( RF24_250KBPS );
     radio.openReadingPipe(1, thisSlaveAddress);
     radio.startListening();
+
+    servo1.attach(6) ;             // Conectar servo1 al pin 6
 }
 
 //=============
@@ -72,36 +83,32 @@ void getData() {
 }
 
 void showData() {
-    if (newData == true) {
-        //Serial.print("Data received ");
-        Serial.println(dataReceived);
-        newData = false;
-         Adelante ();
- delay (5000);
- Parar();
-        if(dataReceived=="Message A"){
-        Serial.println(dataReceived);
-        newData = false;
-         Adelante ();
- delay (5000);
- Parar();
-        digitalWrite(led,HIGH);
-        delay(50);
-        digitalWrite(led,LOW);
+      if (newData == true) {
+          Serial.print("dato leido:");
+          Serial.println(dataReceived);
+
+              
+          if(strcmp(dataReceived,mensaje1)==0){
+          Serial.println(dataReceived);
+          Adelante ();
           }
-         if(dataReceived=="Message B"){
-        Serial.println(dataReceived);
-        newData = false;
-         Atras ();
- delay (5000);
- Parar();
-        digitalWrite(led,HIGH);
-        delay(50);
-        digitalWrite(led,LOW);
+          if(strcmp(dataReceived,mensaje2)==0){
+          Serial.println(dataReceived);
+          Atras ();
           }
- 
-        
-    }
+          if(strcmp(dataReceived,mensaje3)==0){
+          Serial.println(dataReceived);
+          derecha ();
+          }
+          if(strcmp(dataReceived,mensaje4)==0){
+          Serial.println(dataReceived);
+          izquierda ();
+          }
+          
+          newData = false;
+          
+      }
+      else{parar();centrar();}
 }
 
 
@@ -111,7 +118,6 @@ void Adelante ()
  digitalWrite (IN1, HIGH);
  digitalWrite (IN2, LOW);
  analogWrite (ENA, 255); //Velocidad motor A
-
 }
 
 void Atras ()
@@ -119,15 +125,33 @@ void Atras ()
  //Direccion motor A
  digitalWrite (IN1, LOW);
  digitalWrite (IN2, HIGH);
- analogWrite (ENA, 128); //Velocidad motor A
+ analogWrite (ENA, 255); //Velocidad motor A
 
 }
 
-void Parar ()
+void parar()
 {
  //Direccion motor A
  digitalWrite (IN1, LOW);
  digitalWrite (IN2, LOW);
  analogWrite (ENA, 0); //Velocidad motor A
-
+ Serial.println("parado");
 }
+
+void centrar()
+{
+ servo1.write(90);
+ Serial.println("centrado");
+}
+
+void izquierda()
+{
+ servo1.write(120);
+ Serial.println("izquierda");
+}
+void derecha()
+{
+ servo1.write(60); 
+ Serial.println("derecha");
+}
+
